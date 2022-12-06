@@ -84,18 +84,19 @@ class KrishaSpider(Spider, KrishaKzParser):
     start_urls = ['https://krisha.kz/complex/search/']
     cookies = dict()
     custom_settings = {
-    'DOWNLOAD_TIMEOUT': 60,
-    'DOWNLOAD_DELAY': 0.5,
-    'CONCURRENT_REQUESTS': 8,
-    'CONCURRENT_REQUESTS_PER_DOMAIN': 8,
-    'AUTOTHROTTLE_TARGET_CONCURRENCY': 10,
-    'REFERER_ENABLED': False,
+        'DOWNLOAD_TIMEOUT': 60,
+        'DOWNLOAD_DELAY': 0.7,
+        'CONCURRENT_REQUESTS': 8,
+        'CONCURRENT_REQUESTS_PER_DOMAIN': 8,
+        'AUTOTHROTTLE_TARGET_CONCURRENCY': 10,
+        'REFERER_ENABLED': False,
+        'FEED_EXPORT_ENCODING': 'utf-8',
+        'DOWNLOADER_MIDDLEWARES': {
+            'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware': 50
+        }
     }
 
     def parse(self, response):
-        # with open('data.json', 'r') as j:
-        #     f = json.load(j)
-        #     f=1
         try:
             urls = self.get_items_urls(response)
             for url in urls:

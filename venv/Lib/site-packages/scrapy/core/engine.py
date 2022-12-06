@@ -257,7 +257,9 @@ class ExecutionEngine:
 
     def download(self, request: Request, spider: Optional[Spider] = None) -> Deferred:
         """Return a Deferred which fires with a Response as result, only downloader middlewares are applied"""
-        if spider is not None:
+        if spider is None:
+            spider = self.spider
+        else:
             warnings.warn(
                 "Passing a 'spider' argument to ExecutionEngine.download is deprecated",
                 category=ScrapyDeprecationWarning,
@@ -265,7 +267,7 @@ class ExecutionEngine:
             )
             if spider is not self.spider:
                 logger.warning("The spider '%s' does not match the open spider", spider.name)
-        if self.spider is None:
+        if spider is None:
             raise RuntimeError(f"No open spider to crawl: {request}")
         return self._download(request, spider).addBoth(self._downloaded, request, spider)
 
@@ -276,13 +278,10 @@ class ExecutionEngine:
         self.slot.remove_request(request)
         return self.download(result, spider) if isinstance(result, Request) else result
 
-    def _download(self, request: Request, spider: Optional[Spider]) -> Deferred:
+    def _download(self, request: Request, spider: Spider) -> Deferred:
         assert self.slot is not None  # typing
 
         self.slot.add_request(request)
-
-        if spider is None:
-            spider = self.spider
 
         def _on_success(result: Union[Response, Request]) -> Union[Response, Request]:
             if not isinstance(result, (Response, Request)):
