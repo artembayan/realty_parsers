@@ -101,7 +101,7 @@ class KrishaSpider(Spider, KrishaKzParser):
         'FEED_EXPORT_ENCODING': 'utf-8',
         'RETRY_TIMES': 10,
         'DOWNLOADER_MIDDLEWARES': {
-            'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware': 50,
+            'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware': 750,
             'scrapy.downloadermiddlewares.retry.RetryMiddleware': 550,
             'scrapy.downloadermiddlewares.downloadtimeout.DownloadTimeoutMiddleware': 350,
         }
