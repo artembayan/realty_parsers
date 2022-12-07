@@ -31,6 +31,10 @@ class KrishaKzParser():
         id = response.xpath(PP_ID).get()
         return {'ID': id}  # 'url': response.url}
 
+    def get_url(self, response):
+        url = response.url
+        return {'url': url}
+
     def get_title(self, response=None):
         title = response.xpath(PP_TITLE).get('')
         title = self.clear_string(title)
@@ -59,6 +63,10 @@ class KrishaKzParser():
     def get_developer(self, response=None):
         developer = response.xpath(PP_DEVELOPER).get('')
         return {'developer': developer}
+
+    def get_images(self, response=None):
+        images = response.xpath(PP_IMAGES).getall()
+        return {'images': images}
 
     def get_parameters(self, response=None):
         parameters = {}
@@ -91,8 +99,11 @@ class KrishaSpider(Spider, KrishaKzParser):
         'AUTOTHROTTLE_TARGET_CONCURRENCY': 10,
         'REFERER_ENABLED': False,
         'FEED_EXPORT_ENCODING': 'utf-8',
+        'RETRY_TIMES': 10,
         'DOWNLOADER_MIDDLEWARES': {
-            'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware': 50
+            'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware': 50,
+            'scrapy.downloadermiddlewares.retry.RetryMiddleware': 550,
+            'scrapy.downloadermiddlewares.downloadtimeout.DownloadTimeoutMiddleware': 350,
         }
     }
 
@@ -100,10 +111,12 @@ class KrishaSpider(Spider, KrishaKzParser):
         try:
             urls = self.get_items_urls(response)
             for url in urls:
-                yield Request(url=url, callback=self.parse_building, dont_filter=True, cookies=self.cookies)
+                yield Request(url=url, callback=self.parse_building, dont_filter=True, cookies=self.cookies,
+                              meta={'proxy': 'http://kJ0cQY:7dLgdASzsL@46.8.22.213:3000'})
             next_page = self.get_next_page(response)
             if next_page:
-                yield Request(url=next_page, callback=self.parse, dont_filter=True)
+                yield Request(url=next_page, callback=self.parse, dont_filter=True,
+                              meta={'proxy': 'http://kJ0cQY:7dLgdASzsL@46.8.22.213:3000'})
         except:
             self.log(f"Last list page: {response.url}")
 
@@ -111,12 +124,14 @@ class KrishaSpider(Spider, KrishaKzParser):
         result = dict()
         try:
             result.update(self.get_id(response))
+            result.update(self.get_url(response))
             result.update(self.get_title(response))
             result.update(self.get_price(response))
             result.update(self.get_status(response))
             result.update(self.get_date(response))
             result.update(self.get_location(response))
             result.update(self.get_developer(response))
+            result.update(self.get_images(response))
             result.update(self.get_parameters(response))
             result.update(self.get_description(response))
             result.update(self.get_infrastructure(response))

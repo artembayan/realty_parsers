@@ -92,5 +92,9 @@ REQUEST_FINGERPRINTER_IMPLEMENTATION = '2.7'
 TWISTED_REACTOR = 'twisted.internet.asyncioreactor.AsyncioSelectorReactor'
 
 DOWNLOADER_MIDDLEWARES_BASE = {
-    'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware': 50
+    'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware': 50,
+    'scrapy.downloadermiddlewares.retry.RetryMiddleware': 550,
+    'scrapy.downloadermiddlewares.downloadtimeout.DownloadTimeoutMiddleware': 350,
+    # 'krisha_kz.middlewares.MyProxyMiddleware': 350,
+    # 'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware': 400,
 }
