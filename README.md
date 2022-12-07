@@ -1,2 +1,2 @@
 # Krisha_kz
-crawl krisha.kz --output=data.json
+scrapy crawl krisha.kz --output=data.json
