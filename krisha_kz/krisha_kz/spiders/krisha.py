@@ -65,8 +65,19 @@ class KrishaKzParser():
         return {'developer': developer}
 
     def get_images(self, response=None):
-        images = response.xpath(PP_IMAGES).getall()
-        return {'images': images}
+        # images = response.xpath(PP_IMAGES).getall()
+        images_urls = []
+        jo = response.xpath(PP_JSON).get('')
+        jo = re.search('(\{.+\})', jo).group(1)
+        jo = json.loads(jo)
+        images = jo.get('complex', {}).get('photos', {})
+        for image in images:
+            width = image['w']
+            height = image['h']
+            url = image['src'].replace('/complex', '')
+            #url = url.replace('photo.jpg', f'photo-{width}x{height}.jpg')
+            images_urls.append(url)
+        return {'images': images_urls}
 
     def get_parameters(self, response=None):
         parameters = {}
