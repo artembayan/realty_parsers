@@ -233,7 +233,7 @@ class KrishaDevelopersSpider(Spider, KrishaKzParser):
                 result['name'] = self.clear_string(developer.xpath(DP_NAME).get(''))
                 yield Request(url=url, callback=self.parse_developer, dont_filter=True,
                               meta={'result': deepcopy(result), 'proxy': 'http://kJ0cQY:7dLgdASzsL@46.8.22.213:3000'})
-            next_page = ''#self.get_next_page(response)
+            next_page = self.get_next_page(response)
             if next_page:
                 yield Request(url=next_page, callback=self.parse, dont_filter=True,
                               meta={'proxy': 'http://kJ0cQY:7dLgdASzsL@46.8.22.213:3000'})
