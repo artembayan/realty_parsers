@@ -2,9 +2,15 @@
 #
 # See documentation in:
 # https://docs.scrapy.org/en/latest/topics/spider-middleware.html
+import json
+import logging
+from copy import deepcopy
 
 from scrapy import signals
+from elasticsearch import Elasticsearch
+from scrapy.exceptions import NotConfigured
 
+logger = logging.getLogger(__name__)
 # useful for handling different item types with a single interface
 from itemadapter import is_item, ItemAdapter
 
@@ -122,3 +128,28 @@ class KrishaKzDownloaderMiddleware:
 #         host = 'http://{endpoint}:{port}'.format(endpoint=self.endpoint, port=self.port)
 #         request.meta['proxy'] = host
 #         request.headers['Proxy-Authorization'] = basic_authentication
+
+
+class UploadItems(object):
+
+    def __init__(self):
+        self.items = list()
+
+    @classmethod
+    def from_crawler(cls, crawler):
+        ext = cls()
+
+        # connect the extension object to signals
+        crawler.signals.connect(ext.spider_closed, signal=signals.spider_closed)
+        crawler.signals.connect(ext.item_scraped, signal=signals.item_scraped)
+
+        # return the extension object
+        return ext
+
+    def spider_closed(self, spider):
+        es = Elasticsearch([{'host': 'localhost', 'port': 9200, 'scheme': 'http'}])
+        for i, item in enumerate(self.items):
+            es.index(index='developers', id=i, document=json.dumps(item))
+
+    def item_scraped(self, item, spider):
+        self.items.append(deepcopy(item))

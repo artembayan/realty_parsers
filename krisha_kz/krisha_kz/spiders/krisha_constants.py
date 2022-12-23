@@ -28,3 +28,14 @@ PP_PROPS = "//div[@id='parameters']"
 PP_PROP_KEY = "//dt[@class='complex-parameters__block-title']/text()"
 PP_PROP_VALUE = "//dd[@class='complex-parameters__block-text']/text()"
 PP_INFRASTRUCTURE = "//dd[contains(@class, 'complex-parameters__block-text--infrastructure')]/text()"
+
+
+PL_DEVELOPERS = "//article[@class='builder-card']"
+PL_DEVELOPER_URL = "//header[@class='builder-card__header']/a/@href"
+
+DP_NAME = "//header[@class='builder-card__header']/a/text()"
+DP_LOGO = "//section[@id='about-the-developer']//img[@class='builder-dev-briefing__image']/@src"
+DP_FOUNDATION_YEAR = "//section[@id='about-the-developer']//p[@class='builder-about__text' and contains(text(), 'Год основания')]/span/text()"
+DP_RENTED_QNTY = "//section[@id='about-the-developer']//p[@class='builder-about__text' and contains(text(), 'Сдано объектов')]/span/text()"
+DP_BEING_BUILT_QNTY = "//section[@id='about-the-developer']//p[@class='builder-about__text' and contains(text(), 'Строится')]/span/text()"
+DP_DESCRIPTION = "//section[@id='about-the-developer']//div[@class='builder-about__description-text']"
