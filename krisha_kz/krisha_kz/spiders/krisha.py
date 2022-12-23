@@ -217,10 +217,9 @@ class KrishaDevelopersSpider(Spider, KrishaKzParser):
             'krisha_kz.pipelines.DropDuplicateItems': 100,
         },
         'UNIQUE_KEYS': ['name', 'logo'],
-        'EXTENSIONS': {
-            'krisha_kz.middlewares.UploadItems': 800
-        },
-        'MYEXT_ENABLED': True,
+        # 'EXTENSIONS': {
+        #     'krisha_kz.middlewares.UploadItems': 800
+        # },
     }
 
     def parse(self, response):
