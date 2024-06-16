@@ -1,2 +1,1 @@
-# Krisha_kz
-scrapy crawl krisha.kz --output=data.json
+scrapy crawl {name} --output=data.json
