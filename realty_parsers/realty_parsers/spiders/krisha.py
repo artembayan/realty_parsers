@@ -1,12 +1,14 @@
 from copy import deepcopy
 from scrapy import Request, Spider, Selector
-from .krisha_constants import *
 
 import json
 import re
 
+from constants.krisha import *
+from realty_parsers.settings import PROXY_URL
 
-class KrishaKzParser():
+
+class KrishaKzParser:
 
     def clear_string(self, string):
         if isinstance(string, str):
@@ -150,11 +152,13 @@ class KrishaSpider(Spider, KrishaKzParser):
             urls = self.get_items_urls(response)
             for url in urls:
                 yield Request(url=url, callback=self.parse_building, dont_filter=True, cookies=self.cookies,
-                              meta={'proxy': 'http://kJ0cQY:7dLgdASzsL@46.8.22.213:3000'})
+                              meta={'proxy': PROXY_URL}
+                              )
             next_page = self.get_next_page(response)
             if next_page:
                 yield Request(url=next_page, callback=self.parse, dont_filter=True,
-                              meta={'proxy': 'http://kJ0cQY:7dLgdASzsL@46.8.22.213:3000'})
+                              meta={'proxy': PROXY_URL}
+                              )
         except:
             self.log(f"Last list page: {response.url}")
 
@@ -214,11 +218,11 @@ class KrishaDevelopersSpider(Spider, KrishaKzParser):
             'scrapy.downloadermiddlewares.downloadtimeout.DownloadTimeoutMiddleware': 350,
         },
         'ITEM_PIPELINES': {
-            'krisha_kz.pipelines.DropDuplicateItems': 100,
+            'realty_parsers.pipelines.DropDuplicateItems': 100,
         },
         'UNIQUE_KEYS': ['name', 'logo'],
         # 'EXTENSIONS': {
-        #     'krisha_kz.middlewares.UploadItems': 800
+        #     'realty_parsers.middlewares.UploadItems': 800
         # },
     }
 
@@ -231,11 +235,11 @@ class KrishaDevelopersSpider(Spider, KrishaKzParser):
                 url = response.urljoin(developer.xpath(PL_DEVELOPER_URL).get(''))
                 result['name'] = self.clear_string(developer.xpath(DP_NAME).get(''))
                 yield Request(url=url, callback=self.parse_developer, dont_filter=True,
-                              meta={'result': deepcopy(result), 'proxy': 'http://kJ0cQY:7dLgdASzsL@46.8.22.213:3000'})
+                              meta={'result': deepcopy(result), 'proxy': PROXY_URL})
             next_page = self.get_next_page(response)
             if next_page:
                 yield Request(url=next_page, callback=self.parse, dont_filter=True,
-                              meta={'proxy': 'http://kJ0cQY:7dLgdASzsL@46.8.22.213:3000'})
+                              meta={'proxy': PROXY_URL})
         except:
             self.log(f"Last list page: {response.url}")
 
