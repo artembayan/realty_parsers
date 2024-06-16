@@ -6,7 +6,6 @@ from dotenv import load_dotenv
 load_dotenv()
 
 BOT_NAME = 'realty_parsers'
-
 SPIDER_MODULES = ['realty_parsers.spiders']
 NEWSPIDER_MODULE = 'realty_parsers.spiders'
 
