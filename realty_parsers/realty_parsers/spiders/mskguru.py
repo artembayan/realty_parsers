@@ -1,12 +1,13 @@
-from copy import deepcopy
-from scrapy import Request, Spider, Selector
-from .krisha_constants import *
-
 import json
 import re
 
+from copy import deepcopy
+from scrapy import Request, Selector, Spider
 
-class KrishaKzParser():
+from .mskguru_constants import *
+
+
+class MskguruParser:
 
     def clear_string(self, string):
         if isinstance(string, str):
@@ -16,24 +17,17 @@ class KrishaKzParser():
         else:
             return ''
 
-    def get_items_urls(self, response):
-        items = [response.urljoin(url) for url in response.xpath(PL_ITEM_URL).getall()]
-        return items
+    @staticmethod
+    def get_items_urls(response):
+        return response.xpath(PL_ITEM_URL).getall()
 
-    def get_developers(self, response):
-        developers = response.xpath(PL_DEVELOPERS).getall()
-        return developers
-
-    def get_next_page(self, response):
-        next_page = response.xpath(PL_PAGE_NEXT).get(None)
-        if not next_page:
-            return ''
-        url = response.urljoin(next_page)
-        return url
+    @staticmethod
+    def get_next_page(response):
+        return response.xpath(PL_PAGE_NEXT).get()
 
     def get_id(self, response=None):
         id = response.xpath(PP_ID).get()
-        return {'ID': id}  # 'url': response.url}
+        return {'ID': id}
 
     def get_url(self, response):
         url = response.url
@@ -124,11 +118,10 @@ class KrishaKzParser():
         return {'description': description}
 
 
-class KrishaSpider(Spider, KrishaKzParser):
-    name = 'krisha.kz'
-    allowed_domains = ['krisha.kz']
-    start_urls = ['https://krisha.kz/complex/search/']
-    cookies = dict()
+class MskguruSpider(Spider, MskguruParser):
+    name = 'mskguru.ru'
+    allowed_domains = ['mskguru.ru']
+    start_urls = ['https://mskguru.ru/novostroyki']
     custom_settings = {
         'DOWNLOAD_TIMEOUT': 60,
         'DOWNLOAD_DELAY': 0.7,
@@ -138,6 +131,7 @@ class KrishaSpider(Spider, KrishaKzParser):
         'REFERER_ENABLED': False,
         'FEED_EXPORT_ENCODING': 'utf-8',
         'RETRY_TIMES': 10,
+        # 'DOWNLOADER_CLIENT_TLS_METHOD': 'TLSv1.2',
         'DOWNLOADER_MIDDLEWARES': {
             'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware': 750,
             'scrapy.downloadermiddlewares.retry.RetryMiddleware': 550,
@@ -149,17 +143,21 @@ class KrishaSpider(Spider, KrishaKzParser):
         try:
             urls = self.get_items_urls(response)
             for url in urls:
-                yield Request(url=url, callback=self.parse_building, dont_filter=True, cookies=self.cookies,
-                              meta={'proxy': 'http://kJ0cQY:7dLgdASzsL@46.8.22.213:3000'})
-            next_page = self.get_next_page(response)
-            if next_page:
+                yield Request(url=url, callback=self.parse_building, dont_filter=True, headers=HEADERS,
+                              meta={'proxy': 'http://217.25.95.220:8443'}
+                              )
+            if next_page := self.get_next_page(response):
                 yield Request(url=next_page, callback=self.parse, dont_filter=True,
-                              meta={'proxy': 'http://kJ0cQY:7dLgdASzsL@46.8.22.213:3000'})
+                              meta={'proxy': 'http://217.25.95.220:8443'}
+                              )
         except:
             self.log(f"Last list page: {response.url}")
 
     def parse_building(self, response):
         result = dict()
+        if response.status != 200:
+            g=2
+        print(f"Parse {response.url}")
         try:
             result.update(self.get_id(response))
             result.update(self.get_url(response))
@@ -174,16 +172,6 @@ class KrishaSpider(Spider, KrishaKzParser):
             result.update(self.get_description(response))
             result.update(self.get_infrastructure(response))
             yield result
-            # id = response.url.split('/')[-1]
-            # ajax_url = 'https://krisha.kz/a/ajaxPhones?id=' + id
-            # cookies = response.request.headers.get('Cookie')
-            # cookies_list = cookies.decode().split("; ")
-            # for cookie in cookies_list:
-            #     if cookie.split('=')[0] == 'krssid' or cookie.split('=')[0] == 'krishauid':
-            #         self.cookies[cookie.split('=')[0]] = cookie.split('=')[-1]
-            # yield Request(url=ajax_url, callback=self.parse_number, dont_filter=True,
-            #               cookies=self.cookies, headers=HEADERS,
-            #               meta={'passed_data': deepcopy(result)})
         except:
             self.log(f'Parse Item Err: DataOut {response.url}')
 
@@ -192,58 +180,4 @@ class KrishaSpider(Spider, KrishaKzParser):
         jo = json.loads(response.text)
         number = jo['phones'][0]
         result.update({'number': number})
-        yield result
-
-
-class KrishaDevelopersSpider(Spider, KrishaKzParser):
-    name = 'krisha.kz_developers'
-    allowed_domains = ['krisha.kz']
-    start_urls = ['https://krisha.kz/zastroyshik/search']
-    custom_settings = {
-        'DOWNLOAD_TIMEOUT': 60,
-        'DOWNLOAD_DELAY': 0.7,
-        'CONCURRENT_REQUESTS': 8,
-        'CONCURRENT_REQUESTS_PER_DOMAIN': 8,
-        'AUTOTHROTTLE_TARGET_CONCURRENCY': 10,
-        'REFERER_ENABLED': False,
-        'FEED_EXPORT_ENCODING': 'utf-8',
-        'RETRY_TIMES': 10,
-        'DOWNLOADER_MIDDLEWARES': {
-            'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware': 750,
-            'scrapy.downloadermiddlewares.retry.RetryMiddleware': 550,
-            'scrapy.downloadermiddlewares.downloadtimeout.DownloadTimeoutMiddleware': 350,
-        },
-        'ITEM_PIPELINES': {
-            'krisha_kz.pipelines.DropDuplicateItems': 100,
-        },
-        'UNIQUE_KEYS': ['name', 'logo'],
-        # 'EXTENSIONS': {
-        #     'krisha_kz.middlewares.UploadItems': 800
-        # },
-    }
-
-    def parse(self, response):
-        try:
-            result = dict()
-            developers = self.get_developers(response)
-            for developer in developers:
-                developer = Selector(text=developer)
-                url = response.urljoin(developer.xpath(PL_DEVELOPER_URL).get(''))
-                result['name'] = self.clear_string(developer.xpath(DP_NAME).get(''))
-                yield Request(url=url, callback=self.parse_developer, dont_filter=True,
-                              meta={'result': deepcopy(result), 'proxy': 'http://kJ0cQY:7dLgdASzsL@46.8.22.213:3000'})
-            next_page = self.get_next_page(response)
-            if next_page:
-                yield Request(url=next_page, callback=self.parse, dont_filter=True,
-                              meta={'proxy': 'http://kJ0cQY:7dLgdASzsL@46.8.22.213:3000'})
-        except:
-            self.log(f"Last list page: {response.url}")
-
-    def parse_developer(self, response):
-        result = response.meta.get('result', {})
-        result.update(self.get_dev_logo(response))
-        result.update(self.get_foundation_year(response))
-        result.update(self.get_rented_qnty(response))
-        result.update(self.get_being_built_qnty(response))
-        result.update(self.get_dev_description(response))
         yield result

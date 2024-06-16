@@ -1,4 +1,4 @@
-# Scrapy settings for krisha_kz project
+# Scrapy settings for realty_parsers project
 #
 # For simplicity, this file contains only settings considered important or
 # commonly used. You can find more settings consulting the documentation:
@@ -7,14 +7,14 @@
 #     https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 #     https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 
-BOT_NAME = 'krisha_kz'
+BOT_NAME = 'realty_parsers'
 
-SPIDER_MODULES = ['krisha_kz.spiders']
-NEWSPIDER_MODULE = 'krisha_kz.spiders'
+SPIDER_MODULES = ['realty_parsers.spiders']
+NEWSPIDER_MODULE = 'realty_parsers.spiders'
 
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
-#USER_AGENT = 'krisha_kz (+http://www.yourdomain.com)'
+#USER_AGENT = 'realty_parsers (+http://www.yourdomain.com)'
 
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = True
@@ -45,13 +45,13 @@ ROBOTSTXT_OBEY = True
 # Enable or disable spider middlewares
 # See https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 #SPIDER_MIDDLEWARES = {
-#    'krisha_kz.middlewares.KrishaKzSpiderMiddleware': 543,
+#    'realty_parsers.middlewares.KrishaKzSpiderMiddleware': 543,
 #}
 
 # Enable or disable downloader middlewares
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 #DOWNLOADER_MIDDLEWARES = {
-#    'krisha_kz.middlewares.KrishaKzDownloaderMiddleware': 543,
+#    'realty_parsers.middlewares.KrishaKzDownloaderMiddleware': 543,
 #}
 
 # Enable or disable extensions
@@ -63,7 +63,7 @@ ROBOTSTXT_OBEY = True
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 #ITEM_PIPELINES = {
-#    'krisha_kz.pipelines.KrishaKzPipeline': 300,
+#    'realty_parsers.pipelines.KrishaKzPipeline': 300,
 #}
 
 # Enable and configure the AutoThrottle extension (disabled by default)
@@ -95,6 +95,6 @@ DOWNLOADER_MIDDLEWARES_BASE = {
     'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware': 750,
     'scrapy.downloadermiddlewares.retry.RetryMiddleware': 550,
     'scrapy.downloadermiddlewares.downloadtimeout.DownloadTimeoutMiddleware': 350,
-    # 'krisha_kz.middlewares.MyProxyMiddleware': 350,
+    # 'realty_parsers.middlewares.MyProxyMiddleware': 350,
     # 'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware': 400,
 }
