@@ -132,6 +132,7 @@ class MskguruParser:
 
 class MskguruSpider(Spider, MskguruParser):
     name = 'mskguru.ru'
+    index = "mskguru"
     allowed_domains = ['mskguru.ru']
     start_urls = ['https://mskguru.ru/novostroyki']
     custom_settings = {
@@ -150,9 +151,9 @@ class MskguruSpider(Spider, MskguruParser):
             'scrapy.downloadermiddlewares.retry.RetryMiddleware': 550,
             'scrapy.downloadermiddlewares.downloadtimeout.DownloadTimeoutMiddleware': 350,
         },
-        # 'EXTENSIONS': {
-        #     'realty_parsers.middlewares.UploadItems': 800
-        # },
+        'EXTENSIONS': {
+            'realty_parsers.middlewares.UploadItems': 800
+        },
     }
 
     def start_requests(self) -> Iterable[Request]:
@@ -203,6 +204,7 @@ class MskguruSpider(Spider, MskguruParser):
 
 class MskgurDevelopersSpider(Spider, MskguruParser):
     name = 'mskguru.ru_developers'
+    index = "developers"
     allowed_domains = ['mskguru.ru']
     start_urls = ['https://mskguru.ru/companies']
     custom_settings = {
@@ -223,9 +225,9 @@ class MskgurDevelopersSpider(Spider, MskguruParser):
             'realty_parsers.pipelines.DropDuplicateItems': 100,
         },
         'UNIQUE_KEYS': ['name', 'logo'],
-        # 'EXTENSIONS': {
-        #     'realty_parsers.middlewares.UploadItems': 800
-        # },
+        'EXTENSIONS': {
+            'realty_parsers.middlewares.UploadItems': 800
+        },
     }
 
     def parse(self, response):

@@ -11,6 +11,10 @@ NEWSPIDER_MODULE = 'realty_parsers.spiders'
 
 ROBOTSTXT_OBEY = True
 PROXY_URL = os.getenv('PROXY_URL')
+EL_HOST = os.getenv('EL_HOST')
+EL_PORT = os.getenv('EL_PORT')
+EL_USER = os.getenv('EL_USER')
+EL_PASS = os.getenv('EL_PASS')
 
 # Set settings whose default value is deprecated to a future-proof value
 REQUEST_FINGERPRINTER_IMPLEMENTATION = '2.7'
